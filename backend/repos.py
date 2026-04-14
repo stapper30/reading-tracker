@@ -80,7 +80,7 @@ class BookRepo:
                     return Book.from_array(row)
                 return None
 
-    async def mark_book_as_read(self, id: str, rating: int, user_id: int):
+    async def mark_book_as_read(self, id: int, rating: int, user_id: int):
         if not await self._check_user_owns_book(id, user_id):
             print(f"Unauthorized user {user_id} tried to mark book {id} as read")
             return
@@ -94,7 +94,7 @@ class BookRepo:
     async def delete_book_by_title(self, title: str, user_id: int):
         # First get the book to check ownership
         book = await self.get_book_by_title(title)
-        if not book or not await self._check_user_owns_book(book.id, user_id):
+        if not book or not book.id or not await self._check_user_owns_book(book.id, user_id):
             print(f"Unauthorized user {user_id} tried to delete book with title '{title}'")
             return
         async with self.db_pool.connection() as conn:
@@ -118,7 +118,7 @@ class BookRepo:
     async def update_book_rating(self, title: str, new_rating: int, user_id: int):
         # First get the book to check ownership
         book = await self.get_book_by_title(title)
-        if not book or not await self._check_user_owns_book(book.id, user_id):
+        if not book or not book.id or not await self._check_user_owns_book(book.id, user_id):
             print(f"Unauthorized user {user_id} tried to update rating for book '{title}'")
             return
         async with self.db_pool.connection() as conn:
@@ -138,6 +138,7 @@ class BookRepo:
                 if response.status_code == 200:
                     data = response.json()
                     if "items" in data and len(data["items"]) > 0:
+                        image_links = {}
                         for item in data["items"]:
                             volume_info = item["volumeInfo"]
                             print(volume_info["title"], volume_info["authors"])
@@ -145,7 +146,8 @@ class BookRepo:
                                 print(f"Fetched image URL for {title} by {author}")
                                 image_links = volume_info["imageLinks"]
                                 break
-                        return image_links["thumbnail"]
+                        if image_links and "thumbnail" in image_links:
+                            return image_links["thumbnail"]
                     return None
                 return None
         except Exception as e:
@@ -184,7 +186,7 @@ class UserRepo:
                 )
                 row = await cur.fetchone()
                 if row:
-                    return User(email=row[0])
+                    return User(email=row[0], password_hash=password_hash)
                 return None
 
     

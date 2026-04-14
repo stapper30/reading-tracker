@@ -2,12 +2,11 @@ import os
 from psycopg_pool import AsyncConnectionPool
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_URL = os.environ.get("DATABASE_URL")
+DB_URL = os.environ.get("DATABASE_URL", '')
 
 pool = AsyncConnectionPool(conninfo=DB_URL, open=False)
 

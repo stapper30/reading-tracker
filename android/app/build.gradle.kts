@@ -2,24 +2,26 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp") // Add this line
+    id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
 }
 
 android {
     namespace = "com.example.books"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.books"
         minSdk = 28
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Read from gradle.properties (I've already added the key there for you)
+        val apiKey: String = project.findProperty("GOOGLE_BOOKS_API_KEY")?.toString() ?: ""
+        buildConfigField("String", "GOOGLE_BOOKS_API_KEY", "\"$apiKey\"")
     }
 
     buildTypes {
@@ -41,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -55,22 +58,15 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.28.0")
-    // Networking: Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-
-    // JSON Parsing: Kotlin Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-
-    // Image loading (for book covers later!)
     implementation("io.coil-kt:coil-compose:2.6.0")
-
     implementation("androidx.compose.material:material-icons-core:1.6.11")
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.text)
 
-    val roomVersion = "2.6.1" // Use the latest stable version
-
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")

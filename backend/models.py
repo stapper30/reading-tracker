@@ -1,10 +1,10 @@
 class Book:
-    id: int = None
+    id: int | None
     title: str
     author: str
     rating: int
-    user_id: int
-    image_url: str = None
+    user_id: int | None
+    image_url: str | None
     type: str
 
     def to_dict(self):
@@ -17,7 +17,8 @@ class Book:
             "type": self.type
         }
     
-    def from_array(arr):
+    @classmethod
+    def from_array(cls, arr: list):
         return Book(
             id=arr[0],
             title=arr[1],
@@ -32,7 +33,7 @@ class Book:
     def __str__(self):
         return f"Book(title={self.title}, author={self.author}, rating={self.rating}, image_url={self.image_url}, type={self.type})"
     
-    def __init__(self, title: str, author: str, rating: int, user_id: int, type: str, id: int = None, image_url: str = None):
+    def __init__(self, title: str, author: str, rating: int, user_id: int | None, type: str, id: int | None = None, image_url: str | None = None):
         self.title = title
         self.author = author
         self.rating = rating
@@ -45,7 +46,7 @@ class Book:
             raise ValueError("Rating must be between 0 and 10")
         
 class User:
-    id: int = None
+    id: int | None = None
     email: str
     password_hash: str
 
@@ -57,7 +58,7 @@ class User:
     def __str__(self):
         return f"User(email={self.email})"
     
-    def __init__(self, email: str, password_hash: str, id: int = None):
+    def __init__(self, email: str, password_hash: str, id: int | None = None):
         self.email = email
         self.password_hash = password_hash
         self.id = id

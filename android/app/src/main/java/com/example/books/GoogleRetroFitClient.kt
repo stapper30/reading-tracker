@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 
 object GoogleRetroFitClient {
     private const val BASE_URL = "https://www.googleapis.com/books/v1/"
-    private const val API_KEY = "AIzaSyCifOoscEnP_xtC4PI-csuUWcpBVOj0aww"
+    private val API_KEY = BuildConfig.GOOGLE_BOOKS_API_KEY
 
     private val json = Json {
         ignoreUnknownKeys = true 
